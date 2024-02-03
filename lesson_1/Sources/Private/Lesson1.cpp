@@ -113,19 +113,56 @@ int main() {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f, // left
-        0.5f, -0.5f, 0.0f, // right
-        0.0f,  0.5f, 0.0f,  // top
+        // Top X
+        -1.0f, 0.5f, 0.0f, // left
+        -0.5f, 0.5f, 0.0f, // right
+        // Bottom X
+        -1.0f, -0.5f, 0.0f, // left
+        -0.5f, -0.5f, 0.0f, // right
+
+        -0.75f,  0.0f, 0.0f,  // common top
+
+        // Top B
+        -0.5f, 0.5f, 0.0f, // left
+        0.0f, 0.25f, 0.0f, // right
+
+        // Bottom B
+        0.0f, -0.25f, 0.0f, // right
+        -0.5f,  -0.5f, 0.0f,  // top
+
+        -0.5f, 0.0f, 0.0f, // Common B
+
+        // Top P
+        0.5f, 0.5f, 0.0f, // right
+
+        // Bottom P
+        0.0f, -0.5f, 0.0f, // bottom
+
+        // Common
+        0.0f, 0.5f, 0.0f, // left
+        0.5f,  -0.5f, 0.0f,  // top
     };
 
+    unsigned int indices [] = {
+        0, 1, 4, // Top X
+        2, 3, 4, // Bottom X
+        5, 6, 9, // Top B
+        7, 8, 9, // Bottom B
+        10, 12, 13, // Top P
+        11, 13, 12 // Bottom P
+    };
 
-    unsigned int VBO, VAO;
+    unsigned int VBO, VAO, EBO;
+    glGenBuffers(1, &EBO);
     glGenBuffers(1, &VBO);
     glGenVertexArrays(1, &VAO);
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -135,8 +172,8 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(ShaderProgram);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(unsigned int), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
