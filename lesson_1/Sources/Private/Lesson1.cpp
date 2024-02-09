@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <string_view>
+#include <cmath>
 
 const std::string GetShaderContent(const std::string_view ShaderPath) {
     std::string ShaderContent;
@@ -30,7 +31,7 @@ const std::string GetShaderContent(const std::string_view ShaderPath) {
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
+    // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
@@ -114,33 +115,33 @@ int main() {
     // ------------------------------------------------------------------
     float vertices[] = {
         // Top X
-        -1.0f, 0.5f, 0.0f, // left
-        -0.5f, 0.5f, 0.0f, // right
+        -1.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// left
+        -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// right
         // Bottom X
-        -1.0f, -0.5f, 0.0f, // left
-        -0.5f, -0.5f, 0.0f, // right
+        -1.0f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // right
 
-        -0.75f,  0.0f, 0.0f,  // common top
+        -0.75f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f, // common top
 
         // Top B
-        -0.5f, 0.5f, 0.0f, // left
-        0.0f, 0.25f, 0.0f, // right
+        -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // left
+        0.0f, 0.25f, 0.0f, 0.0f, 1.0f, 0.0f, // right
 
         // Bottom B
-        0.0f, -0.25f, 0.0f, // right
-        -0.5f,  -0.5f, 0.0f,  // top
+        0.0f, -0.25f, 0.0f, 1.0f, 0.0f, 0.0f,// right
+        -0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, // top
 
-        -0.5f, 0.0f, 0.0f, // Common B
+        -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,// Common B
 
         // Top P
-        0.5f, 0.5f, 0.0f, // right
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,// right
 
         // Bottom P
-        0.0f, -0.5f, 0.0f, // bottom
+        0.0f, -0.5f, 0.0f, 0.0, 1.0f, 0.0f,// bottom
 
         // Common
-        0.0f, 0.5f, 0.0f, // left
-        0.5f,  -0.5f, 0.0f,  // top
+        0.0f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,// left
+        0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // top
     };
 
     unsigned int indices [] = {
@@ -162,14 +163,21 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     while(!glfwWindowShouldClose(window)) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        // float timeValue = glfwGetTime();
+        // float greenValue = (std::sin(timeValue) / 2.0f) + 0.5f;
+        // int vertexColorLocation = glGetUniformLocation(ShaderProgram, "ourColor");
+        // glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         glUseProgram(ShaderProgram);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
